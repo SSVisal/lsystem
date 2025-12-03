@@ -14,8 +14,9 @@
 #include "gloo/cameras/ArcBallCameraNode.hpp"
 #include "gloo/debug/AxisNode.hpp"
 
-#include "Generator.hpp"
+#include "Generator_zhi.hpp"
 
+#include "Drawer.hpp"
 
 namespace GLOO {
 SimulationApp::SimulationApp(const std::string& app_name,
@@ -37,7 +38,7 @@ void SimulationApp::SetupScene() {
   root.AddChild(make_unique<AxisNode>('A'));
 
   auto ambient_light = std::make_shared<AmbientLight>();
-  ambient_light->SetAmbientColor(glm::vec3(0.2f));
+  ambient_light->SetAmbientColor(glm::vec3(0.6f));
   root.CreateComponent<LightComponent>(ambient_light);
 
   auto point_light = std::make_shared<PointLight>();
@@ -53,11 +54,28 @@ void SimulationApp::SetupScene() {
 }
 
 void SimulationApp::RenderTree(){
-  Generator gen = Generator(10);
-  std::vector<std::string> tokens = gen.Generate();
-  for(std::string token: tokens){
-    std::cout<<token<<std::endl;
-  }
+  // Generator gen = Generator("10");
+  // std::vector<std::string> tokens = gen.Generate();
+  // for(std::string token: tokens){
+  //   std::cout<<token<<std::endl;
+  // }
+  std::map<std::string, std::vector<Replacement>> prod_rules;
+  Generator gen = Generator("-X", prod_rules);
+  gen.AddRule("X", {"F+[[X]-X]-F[-FX]+X", 1});
+  gen.AddRule("F", {"FF", 1});
+  
+  auto final_string = gen.Generate(5); 
+  std::cout << final_string << std::endl;
 
+
+  SceneNode& root = scene_->GetRootNode();
+  auto turtle = Drawer(root);
+
+  for (char c : final_string) {
+    std::string key(1, c);
+    turtle.Move(key);
+  }
 }
+
+
 }  // namespace GLOO

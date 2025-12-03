@@ -11,8 +11,8 @@
 #include "gloo/utils.hpp"
 
 struct Replacement {
-   double chance;
    std::string replacement;
+   double chance;
 };
 
 namespace GLOO {

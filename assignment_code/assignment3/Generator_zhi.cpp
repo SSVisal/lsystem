@@ -1,24 +1,5 @@
 #include "Generator_zhi.hpp"
 
-/*
-    Based on: https://github.com/abiusx/L3D:
-    + = turn right
-    - = turn left
-    & = pitch down
-    ^ = pitch up
-    < or \ = roll left
-    > or / = roll right
-    | = turn 180 degree
-    f or F = draw branch (and go forward)
-    g = go forward (no drawing)
-    [ = save state (i.e. start branch)
-    ] = restore state (i.e. end branch and go back to where it started)
-    * : draw leaf
-    // it has more for thickness and stuff but i choose to ignore
-    
-    where turn, pitch, roll are in terms of different axis
-
-*/
 
 namespace GLOO{
 Generator::Generator(std::string axiom, std::map<std::string, std::vector<Replacement>>& prod_rules)
