@@ -23,8 +23,8 @@ namespace GLOO
     class Drawer
     {
     public:
-        Drawer(SceneNode& root);
-        void Move(const std::string& instruction);
+        Drawer(SceneNode &root);
+        void Move(const std::string &instruction);
 
     private:
         glm::vec3 position_;
@@ -32,10 +32,9 @@ namespace GLOO
 
         std::stack<State> stack_; // for branches
 
-        SceneNode& scene_;
+        SceneNode &scene_;
         std::shared_ptr<ShaderProgram> shader_;
         std::shared_ptr<VertexObject> cylinder_mesh_;
-
     };
 } // namespace GLOO
 

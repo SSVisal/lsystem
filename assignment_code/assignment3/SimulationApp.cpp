@@ -65,8 +65,7 @@ void SimulationApp::RenderTree(){
   gen.AddRule("F", {"FF", 1});
   
   auto final_string = gen.Generate(5); 
-  std::cout << final_string << std::endl;
-
+  // std::cout << final_string << std::endl;
 
   SceneNode& root = scene_->GetRootNode();
   auto turtle = Drawer(root);
