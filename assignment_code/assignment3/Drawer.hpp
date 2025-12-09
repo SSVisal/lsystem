@@ -26,6 +26,10 @@ namespace GLOO
     public:
         Drawer(SceneNode &root);
         void Move(const std::string &instruction);
+        void ResetState(){
+            position_ = glm::vec3(0);
+            orientation_ = glm::quat(1, 0, 0, 0);
+        };
 
     private:
         glm::vec3 position_;

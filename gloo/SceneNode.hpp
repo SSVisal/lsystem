@@ -21,6 +21,10 @@ class SceneNode {
   virtual ~SceneNode() {
   }
 
+  void Clear() {
+    children_.clear();
+  }
+
   size_t GetChildrenCount() const {
     return children_.size();
   }

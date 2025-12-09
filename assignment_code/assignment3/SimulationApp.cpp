@@ -18,6 +18,7 @@
 #include "Generator_zhi.hpp"
 
 #include "Drawer.hpp"
+#include "TreeNode.hpp"
 
 namespace GLOO {
 SimulationApp::SimulationApp(const std::string& app_name,
@@ -55,6 +56,8 @@ void SimulationApp::SetupScene() {
 }
 
 void SimulationApp::RenderTree(){
+  SceneNode& root = scene_->GetRootNode();
+
   // Generator gen = Generator("10");
   // std::vector<std::string> tokens = gen.Generate();
   // for(std::string token: tokens){
@@ -72,25 +75,35 @@ void SimulationApp::RenderTree(){
   std::map<std::string, std::vector<Replacement>> prod_rules;
   Generator gen = Generator("X", prod_rules);
 
-  gen.AddRule("X", {"F[+X][-X][&X]",     0.25});
-  gen.AddRule("X", {"F[/X][\\X][+X]",        0.25});
-  gen.AddRule("X", {"F[&X][^X][/X]",     0.25});
-  gen.AddRule("X", {"FX",                0.25});
+  gen.AddRule("X", {"F[+X][-X][&X]", 0.25});
+  gen.AddRule("X", {"F[/X][\\X][+X]", 0.25});
+  gen.AddRule("X", {"F[&X][^X][/X]", 0.25});
+  gen.AddRule("X", {"FX", 0.25});
 
   gen.AddRule("F", {"FF", 0.25});
   gen.AddRule("F", {"F", 0.75});
 
-  auto final_string = gen.Generate(10);
+  // auto final_string = gen.Generate(6);
 
   // std::cout << final_string << std::endl; 
 
-  SceneNode& root = scene_->GetRootNode();
-  auto turtle = Drawer(root);
+  
+  // auto turtle = Drawer(root);
 
-  for (char c : final_string) {
-    std::string key(1, c);
-    turtle.Move(key);
-  }
+  // for (char c : final_string) {
+  //   std::string key(1, c);
+  //   turtle.Move(key);
+  // }
+
+
+  /*
+    added TreeNode so that 
+    - pressing R resets the generator + tree
+    - pressing N advances one generator step 
+  */
+  auto rules = gen.GetRules();
+  auto tree_node = GLOO::make_unique<TreeNode>(gen.GetCurrent(), rules, 1);
+  root.AddChild(std::move(tree_node));
 }
 
 

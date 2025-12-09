@@ -16,20 +16,30 @@ struct Replacement
    double chance;
 };
 
+typedef std::map<std::string, std::vector<Replacement>> RulesMap;
+
 namespace GLOO
 {
    class Generator
    {
    public:
-      Generator(std::string axiom, std::map<std::string, std::vector<Replacement>> &prod_rules);
+      Generator(std::string axiom, RulesMap &prod_rules);
 
       void AddRule(const std::string &key, const Replacement &replace_to);
       std::string Generate(int num_steps);
 
+      std::string GetCurrent(){
+         return current_;
+      };
+      std::map<std::string, std::vector<Replacement>> GetRules(){
+         return rules_;
+      };
+
    private:
       std::string SampleFromRuleVector(const std::vector<Replacement> &rules_vec, const std::string &original);
+      
       std::string current_;
-      std::map<std::string, std::vector<Replacement>> rules_;
+      RulesMap rules_;
    };
 } // namespace GLOO
 
