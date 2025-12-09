@@ -75,10 +75,10 @@ void SimulationApp::RenderTree(){
   std::map<std::string, std::vector<Replacement>> prod_rules;
   Generator gen = Generator("X", prod_rules);
 
-  gen.AddRule("X", {"F[+X][-X][&X]", 0.25});
-  gen.AddRule("X", {"F[/X][\\X][+X]", 0.25});
-  gen.AddRule("X", {"F[&X][^X][/X]", 0.25});
-  gen.AddRule("X", {"FX", 0.25});
+  gen.AddRule("X", {"F[+X][-X*][&X]", 0.25});
+  gen.AddRule("X", {"F[/X][\\X*][+X*]", 0.25});
+  gen.AddRule("X", {"F[&X][^X*][/X]", 0.25});
+  gen.AddRule("X", {"FX*", 0.25});
 
   gen.AddRule("F", {"FF", 0.25});
   gen.AddRule("F", {"F", 0.75});

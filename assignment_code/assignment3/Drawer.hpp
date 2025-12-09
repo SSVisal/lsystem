@@ -12,6 +12,7 @@
 #include "gloo/VertexObject.hpp"
 #include "gloo/shaders/ShaderProgram.hpp"
 #include "gloo/Material.hpp"
+#include "gloo/MeshData.hpp"
 
 struct State
 {
@@ -40,6 +41,8 @@ namespace GLOO
         SceneNode &scene_;
         std::shared_ptr<ShaderProgram> shader_;
         std::shared_ptr<VertexObject> cylinder_mesh_;
+        std::shared_ptr<VertexObject> leaf_mesh_;
+        std::shared_ptr<Material> leaf_mat_;
         std::shared_ptr<Material> material_;
     };
 } // namespace GLOO

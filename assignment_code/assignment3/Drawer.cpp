@@ -11,6 +11,8 @@
 #include "gloo/components/ShadingComponent.hpp"
 #include "gloo/components/MaterialComponent.hpp"
 
+#include "gloo/MeshLoader.hpp"
+
 /*
     Based on: https://github.com/abiusx/L3D:
     + = turn right
@@ -40,6 +42,13 @@ namespace GLOO
         material_ = std::make_shared<Material>();
         material_->SetAmbientColor(glm::vec3(0.4f, 0.25f, 0.1f));
         material_->SetDiffuseColor(glm::vec3(0.6f, 0.4f, 0.2f));
+
+        MeshData leaf_data = MeshLoader::Import("low_poly_big_leaf.obj");
+        leaf_mesh_ = std::move(leaf_data.vertex_obj);
+        leaf_mat_ = std::make_shared<Material>();
+        leaf_mat_->SetDiffuseColor(glm::vec3(0.007987,0.964009,0.001954));
+        leaf_mat_->SetAmbientColor(glm::vec3(0.0f,1.0f,0.0f));
+        leaf_mat_->SetSpecularColor(glm::vec3(0.5f));
     }
 
     void Drawer::Move(const std::string &instruction)
@@ -145,6 +154,32 @@ namespace GLOO
                 position_ = s.loc;
                 orientation_ = s.orientation;
             }
+        }
+        else if (instruction == "*")
+        {
+            glm::vec3 start = position_;
+            position_ += direction * kStep;
+
+            // add cylinder (copied from my skeleton thing)
+            auto bone_node = make_unique<SceneNode>();
+            bone_node->CreateComponent<ShadingComponent>(shader_);
+            bone_node->CreateComponent<RenderingComponent>(leaf_mesh_);
+            bone_node->CreateComponent<MaterialComponent>(leaf_mat_);
+
+            bone_node->GetTransform().SetPosition(start);
+            bone_node->GetTransform().SetScale(glm::vec3(0.1f, 0.1f*kStep, 0.1f));
+
+            float dot = glm::dot(y_axis, direction);
+            float angle = acosf(dot);
+            glm::vec3 rot_axis = glm::cross(y_axis, direction);
+
+            // avoid parallel to y
+            if (glm::length(rot_axis) > 1e-6f)
+            {
+                bone_node->GetTransform().SetRotation(glm::normalize(rot_axis), angle);
+            }
+
+            scene_.AddChild(std::move(bone_node));
         }
     }
 } // namespace GLOO
