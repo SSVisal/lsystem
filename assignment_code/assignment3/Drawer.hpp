@@ -11,11 +11,12 @@
 #include "gloo/SceneNode.hpp"
 #include "gloo/VertexObject.hpp"
 #include "gloo/shaders/ShaderProgram.hpp"
+#include "gloo/Material.hpp"
 
 struct State
 {
     glm::vec3 loc;
-    glm::vec3 dir;
+    glm::quat orientation;
 };
 
 namespace GLOO
@@ -28,13 +29,14 @@ namespace GLOO
 
     private:
         glm::vec3 position_;
-        glm::vec3 direction_; // normalized
+        glm::quat orientation_; // full 3D orientation (quaternion)
 
         std::stack<State> stack_; // for branches
 
         SceneNode &scene_;
         std::shared_ptr<ShaderProgram> shader_;
         std::shared_ptr<VertexObject> cylinder_mesh_;
+        std::shared_ptr<Material> material_;
     };
 } // namespace GLOO
 
