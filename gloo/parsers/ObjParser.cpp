@@ -81,7 +81,7 @@ ObjParser::ParsedData ObjParser::Parse(const std::string& file_path,
       ss >> mtl_file;
       material_dict = ParseMTL(base_path + mtl_file);
     } else if (command == "o" || command == "s") {
-      std::cout << "Skipped command: " << command << std::endl;
+      // std::cout << "Skipped command: " << command << std::endl;
     } else {
       std::cerr << "Unknown obj command: " << command << std::endl;
       success = false;

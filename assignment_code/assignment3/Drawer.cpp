@@ -158,7 +158,7 @@ namespace GLOO
         else if (instruction == "*")
         {
             glm::vec3 start = position_;
-            position_ += direction * kStep;
+            // position_ += direction * kStep;
 
             // add cylinder (copied from my skeleton thing)
             auto bone_node = make_unique<SceneNode>();
