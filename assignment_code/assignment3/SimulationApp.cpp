@@ -31,6 +31,9 @@ SimulationApp::SimulationApp(const std::string& app_name,
     for(int i = 0; i < 4; i++){
       probs_.push_back(0.25);
     }
+
+    probs_.push_back(0.15);
+    probs_.push_back(0.85);
 }
 
 void SimulationApp::SetupScene() {
@@ -90,11 +93,17 @@ void SimulationApp::RenderTree(){
 
 void SimulationApp::DrawGUI(){
   bool modified = false;
-  ImGui::Begin("Probability Control Panel");
-  modified |= ImGui::SliderFloat("Rule 1: * -> F[+*][-*][&*]", &probs_[0], 0, 1);
-  modified |= ImGui::SliderFloat("Rule 2: * -> F[/*][\\*][+*]", &probs_[1], 0, 1);
-  modified |= ImGui::SliderFloat("Rule 3: * -> F[&*][^*][/*]", &probs_[2], 0, 1);
-  modified |= ImGui::SliderFloat("Rule 4: * -> F*", &probs_[3], 0, 1);
+  ImGui::Begin("Branching Weights");
+  modified |= ImGui::SliderFloat("* -> F[+*][-*][&*]", &probs_[0], 0, 1);
+  modified |= ImGui::SliderFloat("* -> F[/*][\\*][+*]", &probs_[1], 0, 1);
+  modified |= ImGui::SliderFloat("* -> F[&*][^*][/*]", &probs_[2], 0, 1);
+  modified |= ImGui::SliderFloat("* -> F*", &probs_[3], 0, 1);
+  ImGui::PopID();
+  ImGui::End();
+
+  ImGui::Begin("Stem Weights");
+  modified |= ImGui::SliderFloat("F -> FF", &probs_[4], 0, 1);
+  modified |= ImGui::SliderFloat("F -> F", &probs_[5], 0, 1);
   ImGui::PopID();
   ImGui::End();
 
@@ -106,7 +115,7 @@ void SimulationApp::DrawGUI(){
 
 std::string SimulationApp::SetRules(){
   std::map<std::string, std::vector<Replacement>> prod_rules;
-  Generator gen = Generator("*", prod_rules);
+  Generator gen = Generator("FX*", prod_rules);
 
   // gen.AddRule("X", {"F[+X][-X*][&X]", 0.25});
   // gen.AddRule("X", {"F[/X][\\X*][+X*]", 0.25});
@@ -118,12 +127,17 @@ std::string SimulationApp::SetRules(){
   gen.AddRule("*", {"F[&*][^*][/*]", probs_[2]});
   gen.AddRule("*", {"F*", probs_[3]});
 
+  // gen.AddRule("X", {"F[+X*][-X*][&X*]", probs_[0]});
+  // gen.AddRule("X", {"F[/X*][\\X*][+X*]", probs_[1]});
+  // gen.AddRule("X", {"F[&X*][^X*][/X*]", probs_[2]});
+  // gen.AddRule("X", {"FX*", probs_[3]});
+
   // gen.AddRule("X", {"*", 0.5});
   // gen.AddRule("X", {"X", 0.5});
 
-  std::cout<<probs_[0]<<probs_[1]<<probs_[2]<<probs_[3]<<std::endl;
-  gen.AddRule("F", {"FF", 0.25});
-  gen.AddRule("F", {"F", 0.75});
+  // std::cout<<probs_[0]<<probs_[1]<<probs_[2]<<probs_[3]<<std::endl;
+  gen.AddRule("F", {"FF", probs_[4]});
+  gen.AddRule("F", {"F", probs_[5]});
   rules_ = gen.GetRules();
 
   return gen.GetCurrent();
