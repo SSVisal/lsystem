@@ -45,6 +45,14 @@ namespace GLOO
 
         MeshData leaf_data = MeshLoader::Import("low_poly_big_leaf.obj");
         leaf_mesh_ = std::move(leaf_data.vertex_obj);
+        for (const auto& v : leaf_mesh_->GetPositions()) {
+            min_val_.x = std::min(min_val_.x, v.x);
+            min_val_.y = std::min(min_val_.y, v.y);
+            min_val_.z = std::min(min_val_.z, v.z);
+            max_val_.x = std::max(max_val_.x, v.x);
+            max_val_.y = std::max(max_val_.y, v.y);
+            max_val_.z = std::max(max_val_.z, v.z);
+        }
         leaf_mat_ = std::make_shared<Material>();
         leaf_mat_->SetDiffuseColor(glm::vec3(0.007987,0.964009,0.001954));
         leaf_mat_->SetAmbientColor(glm::vec3(0.0f,1.0f,0.0f));
@@ -158,7 +166,7 @@ namespace GLOO
         else if (instruction == "*")
         {
             glm::vec3 start = position_;
-            position_ += direction * kStep;
+
 
             // add cylinder (copied from my skeleton thing)
             auto bone_node = make_unique<SceneNode>();
@@ -166,8 +174,8 @@ namespace GLOO
             bone_node->CreateComponent<RenderingComponent>(leaf_mesh_);
             bone_node->CreateComponent<MaterialComponent>(leaf_mat_);
 
-            bone_node->GetTransform().SetPosition(start);
-            bone_node->GetTransform().SetScale(glm::vec3(0.1f, 0.1f*kStep, 0.1f));
+            bone_node->GetTransform().SetPosition(start - glm::vec3((max_val_.x - 0.01f)*scale_,0,0));
+            bone_node->GetTransform().SetScale(glm::vec3(scale_, scale_*kStep, scale_));
 
             float dot = glm::dot(y_axis, direction);
             float angle = acosf(dot);

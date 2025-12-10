@@ -44,6 +44,9 @@ namespace GLOO
         std::shared_ptr<VertexObject> leaf_mesh_;
         std::shared_ptr<Material> leaf_mat_;
         std::shared_ptr<Material> material_;
+        glm::vec3 min_val_ = glm::vec3(100000.0f);
+        glm::vec3 max_val_ = glm::vec3(-100000.0f);
+        float scale_ = 0.05f;
     };
 } // namespace GLOO
 
