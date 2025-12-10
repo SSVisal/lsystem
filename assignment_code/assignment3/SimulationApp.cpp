@@ -73,28 +73,23 @@ void SimulationApp::RenderTree(){
 
   // 3D maybe
   std::map<std::string, std::vector<Replacement>> prod_rules;
-  Generator gen = Generator("X", prod_rules);
+  Generator gen = Generator("*", prod_rules);
 
-  gen.AddRule("X", {"F[+X][-X*][&X]", 0.25});
-  gen.AddRule("X", {"F[/X][\\X*][+X*]", 0.25});
-  gen.AddRule("X", {"F[&X][^X*][/X]", 0.25});
-  gen.AddRule("X", {"FX*", 0.25});
+  // gen.AddRule("X", {"F[+X][-X*][&X]", 0.25});
+  // gen.AddRule("X", {"F[/X][\\X*][+X*]", 0.25});
+  // gen.AddRule("X", {"F[&X][^X*][/X]", 0.25});
+  // gen.AddRule("X", {"FX*", 0.25});
+
+  gen.AddRule("*", {"F[+*][-*][&*]", 0.25});
+  gen.AddRule("*", {"F[/*][\\*][+*]", 0.25});
+  gen.AddRule("*", {"F[&*][^*][/*]", 0.25});
+  gen.AddRule("*", {"F*", 0.25});
+
+  // gen.AddRule("X", {"*", 0.5});
+  // gen.AddRule("X", {"X", 0.5});
 
   gen.AddRule("F", {"FF", 0.25});
   gen.AddRule("F", {"F", 0.75});
-
-  // auto final_string = gen.Generate(6);
-
-  // std::cout << final_string << std::endl; 
-
-  
-  // auto turtle = Drawer(root);
-
-  // for (char c : final_string) {
-  //   std::string key(1, c);
-  //   turtle.Move(key);
-  // }
-
 
   /*
     added TreeNode so that 
