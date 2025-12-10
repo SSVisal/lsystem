@@ -62,7 +62,7 @@ namespace GLOO
     void Drawer::Move(const std::string &instruction)
     {
         // step length for a single forward instruction
-        const float kStep = 0.25f;
+        const float kStep = 0.1f;
         const float kTurnAngle = glm::radians(25.0f);
 
         // get the forward direction from current orientation
