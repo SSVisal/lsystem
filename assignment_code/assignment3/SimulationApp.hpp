@@ -3,6 +3,8 @@
 
 #include "gloo/Application.hpp"
 
+#include "TreeNode.hpp"
+
 #include "IntegratorType.hpp"
 
 namespace GLOO {
@@ -14,10 +16,16 @@ class SimulationApp : public Application {
                 float integration_step);
   void SetupScene() override;
   void RenderTree();
+  std::string SetRules();
+protected:
+  void DrawGUI() override;
 
  private:
   IntegratorType integrator_type_;
   float integration_step_;
+  std::vector<float> probs_;
+  RulesMap rules_;
+  std::unique_ptr<TreeNode> tree_;
 };
 }  // namespace GLOO
 

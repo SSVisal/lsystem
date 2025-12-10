@@ -18,7 +18,7 @@
 #include "Generator_zhi.hpp"
 
 #include "Drawer.hpp"
-#include "TreeNode.hpp"
+
 
 namespace GLOO {
 SimulationApp::SimulationApp(const std::string& app_name,
@@ -28,6 +28,9 @@ SimulationApp::SimulationApp(const std::string& app_name,
     : Application(app_name, window_size),
       integrator_type_(integrator_type),
       integration_step_(integration_step) {
+    for(int i = 0; i < 4; i++){
+      probs_.push_back(0.25);
+    }
 }
 
 void SimulationApp::SetupScene() {
@@ -51,7 +54,6 @@ void SimulationApp::SetupScene() {
   // point_light_node->CreateComponent<LightComponent>(point_light);
   // point_light_node->GetTransform().SetPosition(glm::vec3(0.0f, 10.0f, 4.f));
   // root.AddChild(std::move(point_light_node));
-
   RenderTree();
 }
 
@@ -72,6 +74,36 @@ void SimulationApp::RenderTree(){
   
 
   // 3D maybe
+  
+
+  /*
+    added TreeNode so that 
+    - pressing R resets the generator + tree
+    - pressing N advances one generator step 
+  */
+  std::string current = SetRules();
+  tree_ = GLOO::make_unique<TreeNode>(current, rules_, 1);
+  // tree_->LinkRules(rules_);
+  root.AddChild(std::move(tree_));
+}
+
+void SimulationApp::DrawGUI(){
+  bool modified = false;
+  ImGui::Begin("Probability Control Panel");
+  modified |= ImGui::SliderFloat("Rule 1: * -> F[+*][-*][&*]", &probs_[0], 0, 1);
+  modified |= ImGui::SliderFloat("Rule 2: * -> F[/*][\\*][+*]", &probs_[1], 0, 1);
+  modified |= ImGui::SliderFloat("Rule 3: * -> F[&*][^*][/*]", &probs_[2], 0, 1);
+  modified |= ImGui::SliderFloat("Rule 4: * -> F*", &probs_[3], 0, 1);
+  ImGui::PopID();
+  ImGui::End();
+
+  if(modified){
+    SetRules();
+    tree_ -> UpdateRules(rules_);
+  }
+}
+
+std::string SimulationApp::SetRules(){
   std::map<std::string, std::vector<Replacement>> prod_rules;
   Generator gen = Generator("*", prod_rules);
 
@@ -80,26 +112,19 @@ void SimulationApp::RenderTree(){
   // gen.AddRule("X", {"F[&X][^X*][/X]", 0.25});
   // gen.AddRule("X", {"FX*", 0.25});
 
-  gen.AddRule("*", {"F[+*][-*][&*]", 0.25});
-  gen.AddRule("*", {"F[/*][\\*][+*]", 0.25});
-  gen.AddRule("*", {"F[&*][^*][/*]", 0.25});
-  gen.AddRule("*", {"F*", 0.25});
+  gen.AddRule("*", {"F[+*][-*][&*]", probs_[0]});
+  gen.AddRule("*", {"F[/*][\\*][+*]", probs_[1]});
+  gen.AddRule("*", {"F[&*][^*][/*]", probs_[2]});
+  gen.AddRule("*", {"F*", probs_[3]});
 
   // gen.AddRule("X", {"*", 0.5});
   // gen.AddRule("X", {"X", 0.5});
 
+  std::cout<<probs_[0]<<probs_[1]<<probs_[2]<<probs_[3]<<std::endl;
   gen.AddRule("F", {"FF", 0.25});
   gen.AddRule("F", {"F", 0.75});
-
-  /*
-    added TreeNode so that 
-    - pressing R resets the generator + tree
-    - pressing N advances one generator step 
-  */
-  auto rules = gen.GetRules();
-  auto tree_node = GLOO::make_unique<TreeNode>(gen.GetCurrent(), rules, 1);
-  root.AddChild(std::move(tree_node));
+  rules_ = std::move(gen.GetRules());
+  return gen.GetCurrent();
 }
-
 
 }  // namespace GLOO

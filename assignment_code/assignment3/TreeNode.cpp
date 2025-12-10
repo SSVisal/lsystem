@@ -55,6 +55,10 @@ namespace GLOO
         std::cout << "Restart Tree: " << std::endl; 
     }
 
+    void TreeNode::UpdateRules(RulesMap &rules){
+        rules_ = rules;
+    }
+
     void TreeNode::NextStep(){
         this->Clear();
         auto step_string = generator_.Generate(step_size_);

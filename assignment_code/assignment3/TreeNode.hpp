@@ -15,6 +15,7 @@ namespace GLOO
     public:
         TreeNode(std::string axiom, RulesMap &rules, int step);
         void Update(double delta_time) override;
+        void UpdateRules(RulesMap &rules);
 
     private:
         void ResetTree();
