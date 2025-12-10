@@ -68,6 +68,7 @@ namespace GLOO
         // get the forward direction from current orientation
         glm::vec3 y_axis(0.0f, 1.0f, 0.0f);
         glm::vec3 direction = glm::normalize(orientation_ * y_axis);
+        glm::quat leaf_orient = orientation_;
 
         if (instruction == "F" || instruction == "f")
         {
@@ -131,13 +132,13 @@ namespace GLOO
         {
             // roll left (y)
             glm::quat roll = glm::angleAxis(kTurnAngle, glm::vec3(0, 1, 0));
-            orientation_ = glm::normalize(orientation_ * roll);
+            leaf_orient = glm::normalize(orientation_ * roll);
         }
         else if (instruction == "/")
         {
             // roll right (y)
             glm::quat roll = glm::angleAxis(-kTurnAngle, glm::vec3(0, 1, 0));
-            orientation_ = glm::normalize(orientation_ * roll);
+            leaf_orient = glm::normalize(orientation_ * roll);
         }
         else if (instruction == "|")
         {
@@ -169,25 +170,31 @@ namespace GLOO
 
 
             // add cylinder (copied from my skeleton thing)
+            auto leafParent = make_unique<SceneNode>();
+            leafParent->GetTransform().SetPosition(start);
+
             auto bone_node = make_unique<SceneNode>();
             bone_node->CreateComponent<ShadingComponent>(shader_);
             bone_node->CreateComponent<RenderingComponent>(leaf_mesh_);
             bone_node->CreateComponent<MaterialComponent>(leaf_mat_);
 
-            bone_node->GetTransform().SetPosition(start - glm::vec3((max_val_.x - 0.01f)*scale_,0,0));
-            bone_node->GetTransform().SetScale(glm::vec3(scale_, scale_*kStep, scale_));
+            bone_node->GetTransform().SetPosition(glm::vec3((max_val_.x - 0.01f),0,0));
 
+            leafParent->AddChild(std::move(bone_node));
             float dot = glm::dot(y_axis, direction);
-            float angle = acosf(dot);
-            glm::vec3 rot_axis = glm::cross(y_axis, direction);
+            float angle = acosf(dot)*4;
+            glm::quat rot_axis = glm::angleAxis(angle, direction);
+
+            leaf_orient = glm::normalize(rot_axis * orientation_);
 
             // avoid parallel to y
             if (glm::length(rot_axis) > 1e-6f)
             {
-                bone_node->GetTransform().SetRotation(glm::normalize(rot_axis), angle);
+                leafParent->GetTransform().SetRotation(leaf_orient);
             }
+            leafParent->GetTransform().SetScale(glm::vec3(scale_, scale_*kStep, scale_));
 
-            scene_.AddChild(std::move(bone_node));
+            scene_.AddChild(std::move(leafParent));
         }
     }
 } // namespace GLOO
