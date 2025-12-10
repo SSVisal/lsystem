@@ -57,6 +57,7 @@ namespace GLOO
 
     void TreeNode::UpdateRules(RulesMap &rules){
         rules_ = rules;
+        ResetTree();
     }
 
     void TreeNode::NextStep(){

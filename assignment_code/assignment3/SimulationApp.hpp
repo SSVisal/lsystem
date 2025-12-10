@@ -25,7 +25,7 @@ protected:
   float integration_step_;
   std::vector<float> probs_;
   RulesMap rules_;
-  std::unique_ptr<TreeNode> tree_;
+  TreeNode* tree_ptr_;
 };
 }  // namespace GLOO
 

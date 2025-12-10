@@ -82,9 +82,10 @@ void SimulationApp::RenderTree(){
     - pressing N advances one generator step 
   */
   std::string current = SetRules();
-  tree_ = GLOO::make_unique<TreeNode>(current, rules_, 1);
+  auto tree_node = GLOO::make_unique<TreeNode>(current, rules_, 1);
+  tree_ptr_ = tree_node.get();
   // tree_->LinkRules(rules_);
-  root.AddChild(std::move(tree_));
+  root.AddChild(std::move(tree_node));
 }
 
 void SimulationApp::DrawGUI(){
@@ -99,7 +100,7 @@ void SimulationApp::DrawGUI(){
 
   if(modified){
     SetRules();
-    tree_ -> UpdateRules(rules_);
+    tree_ptr_->UpdateRules(rules_);
   }
 }
 
@@ -123,7 +124,8 @@ std::string SimulationApp::SetRules(){
   std::cout<<probs_[0]<<probs_[1]<<probs_[2]<<probs_[3]<<std::endl;
   gen.AddRule("F", {"FF", 0.25});
   gen.AddRule("F", {"F", 0.75});
-  rules_ = std::move(gen.GetRules());
+  rules_ = gen.GetRules();
+
   return gen.GetCurrent();
 }
 
