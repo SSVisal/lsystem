@@ -32,8 +32,8 @@ SimulationApp::SimulationApp(const std::string& app_name,
       probs_.push_back(0.25);
     }
 
-    probs_.push_back(0.15);
-    probs_.push_back(0.85);
+    probs_.push_back(0.25);
+    probs_.push_back(0.75);
 }
 
 void SimulationApp::SetupScene() {
@@ -49,14 +49,14 @@ void SimulationApp::SetupScene() {
   ambient_light->SetAmbientColor(glm::vec3(0.85f));
   root.CreateComponent<LightComponent>(ambient_light);
 
-  // auto point_light = std::make_shared<PointLight>();
-  // point_light->SetDiffuseColor(glm::vec3(0.8f, 0.8f, 0.8f));
-  // point_light->SetSpecularColor(glm::vec3(1.0f, 1.0f, 1.0f));
-  // point_light->SetAttenuation(glm::vec3(1.0f, 0.09f, 0.032f));
-  // auto point_light_node = make_unique<SceneNode>();
-  // point_light_node->CreateComponent<LightComponent>(point_light);
-  // point_light_node->GetTransform().SetPosition(glm::vec3(0.0f, 10.0f, 4.f));
-  // root.AddChild(std::move(point_light_node));
+  auto point_light = std::make_shared<PointLight>();
+  point_light->SetDiffuseColor(glm::vec3(0.8f, 0.8f, 0.8f));
+  point_light->SetSpecularColor(glm::vec3(1.0f, 1.0f, 1.0f));
+  point_light->SetAttenuation(glm::vec3(1.0f, 0.09f, 0.032f));
+  auto point_light_node = make_unique<SceneNode>();
+  point_light_node->CreateComponent<LightComponent>(point_light);
+  point_light_node->GetTransform().SetPosition(glm::vec3(0.0f, 10.0f, 4.f));
+  root.AddChild(std::move(point_light_node));
   RenderTree();
 }
 
@@ -95,8 +95,8 @@ void SimulationApp::DrawGUI(){
   bool modified = false;
   ImGui::Begin("Branching Weights");
   modified |= ImGui::SliderFloat("* -> F[+*][-*][&*]", &probs_[0], 0, 1);
-  modified |= ImGui::SliderFloat("* -> F[/*][\\*][+*]", &probs_[1], 0, 1);
-  modified |= ImGui::SliderFloat("* -> F[&*][^*][/*]", &probs_[2], 0, 1);
+  modified |= ImGui::SliderFloat("* -> F[^*][&*][+*]", &probs_[1], 0, 1);
+  modified |= ImGui::SliderFloat("* -> F[&*][^*][-*]", &probs_[2], 0, 1);
   modified |= ImGui::SliderFloat("* -> F*", &probs_[3], 0, 1);
   ImGui::PopID();
   ImGui::End();
@@ -115,7 +115,7 @@ void SimulationApp::DrawGUI(){
 
 std::string SimulationApp::SetRules(){
   std::map<std::string, std::vector<Replacement>> prod_rules;
-  Generator gen = Generator("FX*", prod_rules);
+  Generator gen = Generator("FF[+*][-*][&*][^*]", prod_rules);
 
   // gen.AddRule("X", {"F[+X][-X*][&X]", 0.25});
   // gen.AddRule("X", {"F[/X][\\X*][+X*]", 0.25});
@@ -123,8 +123,8 @@ std::string SimulationApp::SetRules(){
   // gen.AddRule("X", {"FX*", 0.25});
 
   gen.AddRule("*", {"F[+*][-*][&*]", probs_[0]});
-  gen.AddRule("*", {"F[/*][\\*][+*]", probs_[1]});
-  gen.AddRule("*", {"F[&*][^*][/*]", probs_[2]});
+  gen.AddRule("*", {"F[^*][&*][+*]", probs_[1]});
+  gen.AddRule("*", {"F[&*][^*][-*]", probs_[2]});
   gen.AddRule("*", {"F*", probs_[3]});
 
   // gen.AddRule("X", {"F[+X*][-X*][&X*]", probs_[0]});

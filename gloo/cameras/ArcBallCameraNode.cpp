@@ -14,7 +14,7 @@
 
 namespace GLOO {
 ArcBallCameraNode::ArcBallCameraNode(float fov, float aspect, float distance)
-    : SceneNode(), fov_(fov), distance_(distance) {
+    : SceneNode(), fov_(fov), distance_(distance), rotation_angle_(0.0f), is_rotating_(false) {
   auto camera = make_unique<CameraComponent>(fov, aspect, 0.1f, 100.f);
   AddComponent(std::move(camera));
 
@@ -60,6 +60,15 @@ void ArcBallCameraNode::Update(double delta_time) {
       ToggleAxes();
     }
     prev_released = false;
+  } else if (InputManager::GetInstance().IsKeyPressed('V')) {
+    if (prev_released) {
+      // Toggle smooth continuous rotation
+      is_rotating_ = !is_rotating_;
+      if (is_rotating_) {
+        Calibrate();  // Update start rotation when enabling
+      }
+    }
+    prev_released = false;
   }  else {
     auto scroll = input_manager.FetchAndResetMouseScroll();
     if (scroll != 0.0) {
@@ -69,6 +78,13 @@ void ArcBallCameraNode::Update(double delta_time) {
     start_position_ = GetTransform().GetPosition();
     start_rotation_ = GetTransform().GetRotation();
     start_distance_ = distance_;
+  }
+
+  // Apply smooth continuous rotation if enabled
+  if (is_rotating_) {
+    rotation_angle_ += glm::radians(30.0f) * static_cast<float>(delta_time);
+    glm::quat rotation = glm::angleAxis(rotation_angle_, glm::vec3(0, 1, 0));
+    GetTransform().SetRotation(rotation);
   }
 
   auto V = make_unique<glm::mat4>(glm::lookAt(

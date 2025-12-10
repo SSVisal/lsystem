@@ -33,6 +33,8 @@ class ArcBallCameraNode : public SceneNode {
   SceneNode* x_line_node_ptr_;
   SceneNode* y_line_node_ptr_;
   SceneNode* z_line_node_ptr_;
+  float rotation_angle_;
+  bool is_rotating_;
 };
 }  // namespace GLOO
 
